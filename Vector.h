@@ -101,18 +101,31 @@ struct Vec2 {
 //Vec3 Class Header
 
 struct Vec3 {
+
+	struct Axis {
+		static const Vec3 x;
+		static const Vec3 y;
+		static const Vec3 z;
+	};
+
 	//Member variables
 	float x, y, z;
 
 	//Constructors
-	   //Create a Vec3 with all member properties initialized to 0.
-	Vec3();
+	//Create a Vec3 with all member properties initialized to 0.
+	inline Vec3() {
+		x = y = z = 0;
+	}
 	//Create a Vec3 with all member properties initialized to val.
-	Vec3(float val);
+	inline Vec3(float val) {
+		x = y = z = val;
+	}
 	//Create a Vec3 and initialize all member properties explicitly.
-	Vec3(float x, float y, float z);
+	inline Vec3(float x_, float y_, float z_) {
+		x = x_; y = y_; z = z_;
+	}
 	//Destruct the Vec3
-	~Vec3();
+	inline ~Vec3() {}
 
 	//Operator overloads
 	// I inlined the operator overloads because they would generate more overhead if they were called as normal in the cpp.
@@ -143,9 +156,14 @@ struct Vec3 {
 		return Vec3(x * f, y * f, z * f);
 	}
 
+	//To allow scaler before vector
+	inline friend Vec3 operator * (const float s, const Vec3& v) {
+		return v * s;
+	}
+
 	//Divide vector by scalar
 	//Beware of dividing by extremely small numbers. Will update to handle such cases as the class develops.
-	inline const Vec3 operator /(const float f) const {
+	inline const Vec3 operator / (const float f) const {
 		return Vec3(x / f, y / f, z / f);
 	}
 
@@ -198,13 +216,7 @@ struct Vec3 {
 		return (*this / this->Mag());
 	}
 
-	inline friend Vec3 operator * (const float s, const Vec3& v) {
-		return v * s;
-	}
-
-
-	//Get the Vec3 as a string.
-	std::string ToString();
+	std::string ToString() const; //Averaged 26.5 microseconds inlined, 25.8 prototyped.
 
 
 
@@ -223,10 +235,6 @@ struct Vec3 {
 		return ((v2 - v1) * t) + v1;
 	}
 
-	//Rotate a vector around a specified axis
-	inline static Vec3 rotate(const Vec3& axis, float theta, const Vec3& vec) {
-		return vec * cos(theta) + Dot(vec, axis) * axis * (1.0f - cos(theta)) + Cross(axis, vec) * sin(theta);
-	}
 
 
 };
