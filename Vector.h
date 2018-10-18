@@ -6,9 +6,14 @@
 #define TINY_FLOAT 1.0e-7f
 #endif
 
-#include <string>
+#ifndef DEGREE_TO_RADIAN
+#define DEGREE_TO_RADIAN = 0.01745329251f;
+#endif
 
-class Vec2 {
+#include<string.h>
+#include <math.h>
+
+struct Vec2 {
 	float x, y;
 
 	inline Vec2() {
@@ -23,6 +28,8 @@ class Vec2 {
 		x = x_;
 		y = y_;
 	}
+
+	inline ~Vec2(){}
 
 	inline Vec2& operator = (const Vec2& v) {
 		x = v.x;
@@ -57,7 +64,7 @@ class Vec2 {
 		return Vec2(x * f, y * f);
 	}
 
-	inline Vec2 operator *= (float f) {
+	inline Vec2& operator *= (float f) {
 		x *= f;
 		y *= f;
 
@@ -66,26 +73,26 @@ class Vec2 {
 
 	inline const Vec2 operator / (float f) const {
 #ifdef _DEBUG //This pattern will appear with division in order to guard against dividing by zero or tiny numbers.
-		if (std::fabs(s) < TINY_FLOAT) {
+		if (std::fabs(f) < TINY_FLOAT) {
 			std::string errorMsg("Divide by nearly zero! ");
 			throw errorMsg;
 		}
 #endif
 
-		float r = 1.0f / s; //Division is a sequential operation (not simultaneous).
+		float r = 1.0f / f; //Division is a sequential operation (not simultaneous).
 		return *this * r; //Multiplication is a simultaneous operation.
 		//The above pattern marginally improves performance with large numbers with negligable performance impact with small number.
 	}
 
-	inline const Vec2 operator / (float f) const {
+	inline Vec2& operator /= (float f)  {
 #ifdef _DEBUG
-		if (std::fabs(s) < TINY_FLOAT) {
+		if (std::fabs(f) < TINY_FLOAT) {
 			std::string errorMsg("Divide by nearly zero! ");
 			throw errorMsg;
 		}
 #endif
 
-		float r = 1.0f / s;
+		float r = 1.0f / f;
 		*this *= r;
 		return *this;
 	}
@@ -178,19 +185,50 @@ struct Vec3 {
 
 
 	//Member methods
-		//Get the magnitude of this Vec3.
-	float Mag() const;
+	//Get the magnitude of this Vec3.
+	inline float Mag() const {
+		return sqrt((x * x) + (y * y) + (z * z));
+	}
 	//Scale the vector so its magnitude is 1.
-	void Normalize();
-	//Return the Dot product of this Vec3 given another.
-	float Dot(const Vec3& other) const;
-	//Scale a vector between itself and another Vec3 by factor t.
-	void Lerp(const Vec3& other, float t);
-	//Rotate a vector around its z axis.
-	void RotateZ(float angle);
+	inline void Normalize() {
+		*this /= this->Mag();
+	}
+	//Get the normalized form of the vector
+	inline const Vec3 GetNormal() const {
+		return (*this / this->Mag());
+	}
+
+	inline friend Vec3 operator * (const float s, const Vec3& v) {
+		return v * s;
+	}
+
 
 	//Get the Vec3 as a string.
-	string ToString();
+	std::string ToString();
+
+
+
+	//Return the dot product of two Vec3s.
+	inline static float Dot(const Vec3& v1, const Vec3& v2) {
+		return (v1.x * v2.x) + (v1.y * v2.y) + (v1.z * v2.z);
+	}
+
+	//Return the cross product of two Vec3s.
+	inline static const Vec3 Cross(const Vec3& v1, const Vec3 v2) {
+		return Vec3(v1.y * v2.z - v1.z * v2.y, v1.z * v2.x - v1.x * v2.z, v1.x * v2.y - v1.y * v2.x);
+	}
+
+	//Lerps between v1 and v2 by factor t
+	inline static Vec3 Lerp(const Vec3& v1, const Vec3& v2, float t) {
+		return ((v2 - v1) * t) + v1;
+	}
+
+	//Rotate a vector around a specified axis
+	inline static Vec3 rotate(const Vec3& axis, float theta, const Vec3& vec) {
+		return vec * cos(theta) + Dot(vec, axis) * axis * (1.0f - cos(theta)) + Cross(axis, vec) * sin(theta);
+	}
+
+
 };
 
 #endif
