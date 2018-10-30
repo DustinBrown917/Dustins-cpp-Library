@@ -4,6 +4,11 @@
 #include "Vector.h"
 
 
+//Return the Vec2 as readable string.
+std::string Vec2::ToString() const {
+	return"[" + std::to_string(x) + "," + std::to_string(y) + "]";
+}
+
 //Return the Vec3 as readable string.
 std::string Vec3::ToString() const{
 	return "[" + std::to_string(x) + "," + std::to_string(y) + "," + std::to_string(z) + "]";

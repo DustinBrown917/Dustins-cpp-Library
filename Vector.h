@@ -11,10 +11,13 @@
 #endif
 
 #include<string.h>
-#include <math.h>
+#include<math.h>
 
+
+#pragma region Vec2
 struct Vec2 {
 	float x, y;
+
 
 	inline Vec2() {
 		x = y = 0.0f;
@@ -30,6 +33,10 @@ struct Vec2 {
 	}
 
 	inline ~Vec2(){}
+
+	/*********************************************************************************************************/
+	/*********************************************** OPERATORS ***********************************************/
+	/*********************************************************************************************************/
 
 	inline Vec2& operator = (const Vec2& v) {
 		x = v.x;
@@ -96,10 +103,47 @@ struct Vec2 {
 		*this *= r;
 		return *this;
 	}
+
+	/*********************************************************************************************************/
+	/********************************************* MEMBER METHODS ********************************************/
+	/*********************************************************************************************************/
+
+	std::string ToString() const;
+
+	inline static Vec2 Rotate(Vec2 vec, float theta) {
+		theta *= DEGREE_TO_RADIAN; //degree to radian conversion factor.
+		float tempx = (vec.x * cos(theta)) - (vec.y * sin(theta));
+		vec.y = (vec.x * sin(theta)) + (vec.y * cos(theta));
+		vec.x = tempx;
+
+		return vec;
+	}
+
+	inline float Mag() const {
+		return sqrt((x * x) + (y * y));
+	}
+
+	inline static Vec2 GetNormal(const Vec2& vec) {
+		return (vec / vec.Mag());
+	}
+
+	inline void Normalize() {
+		*this /= this->Mag();
+	}
+
+	inline static float Dot(const Vec2& v1, const Vec2& v2) {
+		return (v1.x * v2.x) + (v1.y * v2.y);
+	}
+
+	inline static Vec2 Lerp(const Vec2& v1, const Vec2& v2) {
+		return ((v2 - v1) * t) + v1;
+	}
+	
 };
+#pragma endregion
+
 
 //Vec3 Class Header
-
 struct Vec3 {
 
 	struct Axis {
@@ -131,6 +175,10 @@ struct Vec3 {
 	// I inlined the operator overloads because they would generate more overhead if they were called as normal in the cpp.
 	// They are short and common enough that inlining the operators generates a justifiable improvement in efficiency.
 	//TS
+
+	/*********************************************************************************************************/
+	/*********************************************** OPERATORS ***********************************************/
+	/*********************************************************************************************************/
 
 	   //Assignment operator. Return a reference to value at this.
 	inline Vec3& operator = (const Vec3& vec) {
@@ -201,6 +249,10 @@ struct Vec3 {
 		return *this;
 	}
 
+	/*********************************************************************************************************/
+	/********************************************* MEMBER METHODS ********************************************/
+	/*********************************************************************************************************/
+
 
 	//Member methods
 	//Get the magnitude of this Vec3.
@@ -216,9 +268,7 @@ struct Vec3 {
 		return (*this / this->Mag());
 	}
 
-	std::string ToString() const; //Averaged 26.5 microseconds inlined, 25.8 prototyped.
-
-
+	std::string ToString() const; //Averaged 26.5 microseconds inlined, 25.8 declared.
 
 	//Return the dot product of two Vec3s.
 	inline static float Dot(const Vec3& v1, const Vec3& v2) {
