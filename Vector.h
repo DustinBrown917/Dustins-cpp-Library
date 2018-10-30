@@ -18,7 +18,6 @@
 struct Vec2 {
 	float x, y;
 
-
 	inline Vec2() {
 		x = y = 0.0f;
 	}
@@ -142,7 +141,7 @@ struct Vec2 {
 };
 #pragma endregion
 
-
+#pragma region Vec3
 //Vec3 Class Header
 struct Vec3 {
 
@@ -284,9 +283,7 @@ struct Vec3 {
 	inline static Vec3 Lerp(const Vec3& v1, const Vec3& v2, float t) {
 		return ((v2 - v1) * t) + v1;
 	}
-
-
-
 };
+#pragma endregion
 
 #endif
