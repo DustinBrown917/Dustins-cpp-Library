@@ -7,7 +7,7 @@
 #endif
 
 #ifndef DEGREE_TO_RADIAN
-#define DEGREE_TO_RADIAN = 0.01745329251f;
+#define DEGREE_TO_RADIAN 0.01745329251f;
 #endif
 
 #include<string.h>
